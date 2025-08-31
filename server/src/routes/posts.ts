@@ -5,7 +5,6 @@ import { authMiddleware } from '../middleware/auth';
 const router = Router();
 
 // --- PUBLIC ROUTES ---
-// These can be accessed by anyone.
 
 /**
  * @route GET /api/posts
@@ -17,7 +16,7 @@ router.get('/', async (req, res) => {
     const posts = await prisma.post.findMany({
       where: { published: true },
       orderBy: { createdAt: 'desc' },
-      include: { author: { select: { email: true } } }, // Also get author's email
+      include: { author: { select: { email: true } } },
     });
     res.json(posts);
   } catch (error) {
@@ -48,7 +47,25 @@ router.get('/:slug', async (req, res) => {
 
 
 // --- PROTECTED ROUTES ---
-// These require a valid JWT token.
+
+/**
+ * @route GET /api/posts/admin/all
+ * @desc Get ALL posts for the logged-in admin
+ * @access Private
+ */
+router.get('/admin/all', authMiddleware, async (req, res) => {
+  const userId = req.user?.userId;
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: { authorId: userId },
+      orderBy: { createdAt: 'desc' },
+    });
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve admin posts' });
+  }
+});
 
 /**
  * @route POST /api/posts
@@ -64,7 +81,6 @@ router.post('/', authMiddleware, async (req, res) => {
       return res.status(403).json({ error: 'User not authenticated properly' });
     }
 
-    // A simple way to create a URL-friendly slug from the title
     const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
 
     const newPost = await prisma.post.create({
@@ -78,7 +94,6 @@ router.post('/', authMiddleware, async (req, res) => {
     });
     res.status(201).json(newPost);
   } catch (error) {
-    // This can happen if the generated slug is not unique
     res.status(500).json({ error: 'Failed to create post' });
   }
 });
@@ -96,7 +111,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
     const post = await prisma.post.findUnique({ where: { id } });
 
-    // Authorization Check: Is the logged-in user the author?
     if (!post || post.authorId !== userId) {
       return res.status(403).json({ error: 'Forbidden: You cannot edit this post' });
     }
@@ -123,7 +137,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     const post = await prisma.post.findUnique({ where: { id } });
 
-    // Authorization Check: Is the logged-in user the author?
     if (!post || post.authorId !== userId) {
       return res.status(403).json({ error: 'Forbidden: You cannot delete this post' });
     }

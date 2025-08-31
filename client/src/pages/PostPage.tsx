@@ -1,19 +1,13 @@
-// in client/src/pages/PostPage.tsx
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // This hook gets parameters from the URL
+import { useParams } from 'react-router-dom';
 
-interface Post {
-  id: string;
-  title: string;
-  content: string;
-  slug: string;
-}
+import { Post } from '../types'; // Add this line
 
 function PostPage() {
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { slug } = useParams(); // Get the 'slug' from the URL, e.g., /posts/my-first-post
+  const { slug } = useParams();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -32,9 +26,10 @@ function PostPage() {
         setLoading(false);
       }
     };
-
-    fetchPost();
-  }, [slug]); // Re-run this effect if the slug changes
+    if (slug) {
+      fetchPost();
+    }
+  }, [slug]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
