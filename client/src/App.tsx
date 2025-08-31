@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
+import EditPostPage from './pages/EditPostPage'; // Import the new page
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -28,12 +29,20 @@ function App() {
           <Route path="/posts/:slug" element={<PostPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected Admin Route */}
+          {/* Protected Admin Routes */}
           <Route
             path="/admin"
             element={
               <ProtectedRoute>
                 <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/edit/:id"
+            element={
+              <ProtectedRoute>
+                <EditPostPage />
               </ProtectedRoute>
             }
           />

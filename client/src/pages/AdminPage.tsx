@@ -3,7 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import CreatePostForm from '../components/CreatePostForm';
 
-import { Post } from '../types'; // Add this line
+interface Post {
+  id: string;
+  title: string;
+  content: string | null;
+}
 
 function AdminPage() {
   const { token, logout } = useAuth();
@@ -18,15 +22,11 @@ function AdminPage() {
           'Authorization': `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error('Failed to fetch posts');
-      }
+      if (!response.ok) throw new Error('Failed to fetch posts');
       const data = await response.json();
       setPosts(data);
     } catch (err) {
-        if (err instanceof Error) {
-            setError(err.message);
-        }
+      if (err instanceof Error) setError(err.message);
     }
   };
 
@@ -40,9 +40,30 @@ function AdminPage() {
     logout();
     navigate('/');
   };
+  
+  const handleEdit = (id: string) => {
+    navigate(`/admin/edit/${id}`);
+  };
 
-  const handleEdit = (id: string) => console.log('Edit post:', id);
-  const handleDelete = (id: string) => console.log('Delete post:', id);
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) {
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3000/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete post');
+      }
+      fetchAdminPosts();
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+    }
+  };
 
   return (
     <div>
