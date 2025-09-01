@@ -1,19 +1,31 @@
-// in /server/src/index.ts
 import express from 'express';
-import cors from 'cors'; // 1. IMPORT CORS
-import authRoutes from './routes/auth'; // We will create this next
+import cors from 'cors';
+import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
 
 const app = express();
 const port = 3000;
 
-// Middleware to parse JSON bodies
-app.use(cors()); // 2. USE CORS (place it before your routes)
+app.use(cors());
 app.use(express.json());
 
-// Use the authentication routes
+// V V V ADD THIS NEW CODE BLOCK V V V
+// This middleware will log every incoming request
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] Received ${req.method} request for ${req.url}`);
+  next(); // Pass the request to the next handler
+});
+// ^ ^ ^ END OF NEW CODE BLOCK ^ ^ ^
+
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'API is alive and running!',
+    timestamp: new Date().toISOString() 
+  });
+});
 
 app.listen(port, () => {
   console.log(`🚀 Server is running at http://localhost:${port}`);

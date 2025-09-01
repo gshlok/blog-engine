@@ -6,11 +6,6 @@ const router = Router();
 
 // --- PUBLIC ROUTES ---
 
-/**
- * @route GET /api/posts
- * @desc Get all published posts
- * @access Public
- */
 router.get('/', async (req, res) => {
   try {
     const posts = await prisma.post.findMany({
@@ -24,11 +19,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-/**
- * @route GET /api/posts/:slug
- * @desc Get a single post by its unique slug
- * @access Public
- */
 router.get('/:slug', async (req, res) => {
   const { slug } = req.params;
   try {
@@ -48,11 +38,6 @@ router.get('/:slug', async (req, res) => {
 
 // --- PROTECTED ROUTES ---
 
-/**
- * @route GET /api/posts/admin/all
- * @desc Get ALL posts for the logged-in admin
- * @access Private
- */
 router.get('/admin/all', authMiddleware, async (req, res) => {
   const userId = req.user?.userId;
   try {
@@ -66,11 +51,6 @@ router.get('/admin/all', authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * @route GET /api/posts/id/:id
- * @desc Get a single post by ID for editing
- * @access Private
- */
 router.get('/id/:id', authMiddleware, async (req, res) => {
   const { id } = req.params;
   const userId = req.user?.userId;
@@ -85,11 +65,6 @@ router.get('/id/:id', authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * @route POST /api/posts
- * @desc Create a new post
- * @access Private (Requires Auth)
- */
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body;
@@ -113,11 +88,6 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * @route PUT /api/posts/:id
- * @desc Update an existing post
- * @access Private (Requires Auth & Ownership)
- */
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
@@ -137,11 +107,6 @@ router.put('/:id', authMiddleware, async (req, res) => {
   }
 });
 
-/**
- * @route DELETE /api/posts/:id
- * @desc Delete a post
- * @access Private (Requires Auth & Ownership)
- */
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
