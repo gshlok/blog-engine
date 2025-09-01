@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    /* Core Settings */
+    "target": "ES2020",             // Compile to a modern, stable version of JavaScript.
+    "module": "commonjs",            // Use the standard Node.js module system.
+    "strict": true,                  // Enforce strict type-checking, catching errors early.
+    "esModuleInterop": true,         // Allows for cleaner imports of different module types.
+
+    /* Project Structure */
+    "rootDir": "./src",              // Where your TypeScript source code lives.
+    "outDir": "./dist",              // Where the compiled JavaScript output will go.
+
+    /* Other Options */
+    "forceConsistentCasingInFileNames": true, // Prevents case-related bugs.
+    "skipLibCheck": true,            // Speeds up compilation by not type-checking library files.
+    "sourceMap": true                // Helps in debugging by mapping compiled code back to the original source.
+  },
+  "include": ["src/**/*"] // Tells TypeScript to only look for files inside the 'src' folder.
+}
