@@ -1,90 +1,57 @@
-import { useEffect, type ReactElement } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
-import CreatePostForm from '../components/CreatePostForm';
-import {
-  Box,
-  Flex,
-  Heading,
-  Button,
-  Text,
-  VStack,
-  Card,
-  CardBody,
-  Icon,
-  SimpleGrid,
-} from '@chakra-ui/react';
-import { FiEdit3, FiList } from 'react-icons/fi';
+import { Box, Tabs, TabList, TabPanels, Tab, TabPanel, Heading } from '@chakra-ui/react';
+import Dashboard from '../components/admin/Dashboard';
+import PostsManagement from './PostsManagement';
+import CategoryManager from '../components/admin/CategoryManager';
+import PluginManager from '../components/admin/PluginManager';
+import ThemeManager from '../components/admin/ThemeManager';
 
-export default function AdminPage(): ReactElement {
-  const { token, logout } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!token) {
-      navigate('/login');
-    }
-  }, [token, navigate]);
-
-  const handleLogout = (): void => {
-    logout();
-    navigate('/');
-  };
+function AdminPage() {
+  const { token } = useAuth();
+  const [activeTab, setActiveTab] = useState(0);
 
   if (!token) {
-    return <></>;
+    return <div>Please log in to access the admin panel.</div>;
   }
 
   return (
-    <Box p={4}>
-      <Flex justifyContent="space-between" alignItems="center" mb={6}>
-        <Heading size="lg">Admin Dashboard</Heading>
-        <Button onClick={handleLogout} colorScheme="red" variant="outline">
-          Logout
-        </Button>
-      </Flex>
+    <Box p={6}>
+      <Heading mb={6}>Admin Dashboard</Heading>
+      
+      <Tabs index={activeTab} onChange={setActiveTab} variant="enclosed">
+        <TabList>
+          <Tab>Overview</Tab>
+          <Tab>Posts</Tab>
+          <Tab>Categories</Tab>
+          <Tab>Plugins</Tab>
+          <Tab>Themes</Tab>
+        </TabList>
 
-      <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-        <Card>
-          <CardBody>
-            <VStack spacing={4} align="stretch">
-              <Flex align="center" gap={2}>
-                <Icon as={FiList} />
-                <Text fontSize="lg">Manage Posts</Text>
-              </Flex>
-              <Text color="gray.600">View, edit, and delete your blog posts</Text>
-              <Button
-                as={RouterLink}
-                to="/admin/posts"
-                colorScheme="blue"
-                leftIcon={<FiList />}
-              >
-                Go to Posts
-              </Button>
-            </VStack>
-          </CardBody>
-        </Card>
-
-        <Card>
-          <CardBody>
-            <VStack spacing={4} align="stretch">
-              <Flex align="center" gap={2}>
-                <Icon as={FiEdit3} />
-                <Text fontSize="lg">Create New Post</Text>
-              </Flex>
-              <Text color="gray.600">Write a new blog post</Text>
-              <Button
-                as={RouterLink}
-                to="/admin/posts/new"
-                colorScheme="green"
-                leftIcon={<FiEdit3 />}
-              >
-                Create Post
-              </Button>
-            </VStack>
-          </CardBody>
-        </Card>
-      </SimpleGrid>
+        <TabPanels>
+          <TabPanel>
+            <Dashboard token={token} />
+          </TabPanel>
+          
+          <TabPanel>
+            <PostsManagement />
+          </TabPanel>
+          
+          <TabPanel>
+            <CategoryManager token={token} />
+          </TabPanel>
+          
+          <TabPanel>
+            <PluginManager />
+          </TabPanel>
+          
+          <TabPanel>
+            <ThemeManager />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
     </Box>
   );
 }
+
+export default AdminPage;

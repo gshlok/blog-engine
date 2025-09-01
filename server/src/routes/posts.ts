@@ -14,44 +14,152 @@ interface AuthRequest extends Request {
 
 // --- PUBLIC ROUTES ---
 
-// Get all published posts
+// Get all published posts with pagination
 router.get('/', async (req: Request, res: Response) => {
   try {
-    console.log('Fetching published posts');
-    const posts = await prisma.post.findMany({
-      where: { 
-        OR: [
-          { status: 'PUBLISHED' },
-          { published: true } // For backward compatibility
-        ]
-      },
-      orderBy: { createdAt: 'desc' },
-      include: { 
-        author: { 
-          select: { 
-            email: true 
-          } 
-        },
-        _count: {
-          select: {
-            comments: true
-          }
+    const { page = '1', limit = '10', category, tags, featured, sort = 'newest' } = req.query;
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Build where clause
+    const where: any = { 
+      OR: [
+        { status: 'PUBLISHED' },
+        { published: true }
+      ]
+    };
+
+    // Add filters
+    if (category) {
+      where.category = { slug: category as string };
+    }
+
+    if (tags) {
+      const tagArray = (tags as string).split(',').map(t => t.trim());
+      where.tags = {
+        some: {
+          slug: { in: tagArray }
         }
-      },
-    });
+      };
+    }
+
+    if (featured !== undefined) {
+      where.featured = featured === 'true';
+    }
+
+    // Build order by clause
+    let orderBy: any = {};
+    switch (sort) {
+      case 'oldest':
+        orderBy.publishedAt = 'asc';
+        break;
+      case 'title':
+        orderBy.title = 'asc';
+        break;
+      case 'views':
+        orderBy.views = 'desc';
+        break;
+      case 'likes':
+        orderBy.likes = 'desc';
+        break;
+      case 'newest':
+      default:
+        orderBy.publishedAt = 'desc';
+        break;
+    }
+
+    const [posts, totalPosts] = await Promise.all([
+      prisma.post.findMany({
+        where,
+        orderBy,
+        skip,
+        take: limitNum,
+        include: { 
+          author: { 
+            select: { 
+              email: true 
+            } 
+          },
+          category: {
+            select: {
+              name: true,
+              slug: true,
+              color: true
+            }
+          },
+          tags: {
+            select: {
+              name: true,
+              slug: true
+            }
+          },
+          _count: {
+            select: {
+              comments: true
+            }
+          }
+        },
+      }),
+      prisma.post.count({ where })
+    ]);
+
+    const totalPages = Math.ceil(totalPosts / limitNum);
+
     console.log(`Found ${posts.length} published posts`);
-    res.json({ posts });
+    res.json({ 
+      posts,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalPosts,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
+      }
+    });
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Failed to retrieve posts' });
   }
 });
 
+// Get featured posts
+router.get('/featured', async (req: Request, res: Response) => {
+  try {
+    const posts = await prisma.post.findMany({
+      where: { 
+        featured: true,
+        OR: [
+          { status: 'PUBLISHED' },
+          { published: true }
+        ]
+      },
+      orderBy: { publishedAt: 'desc' },
+      take: 5,
+      include: { 
+        author: { select: { email: true } },
+        category: { select: { name: true, slug: true, color: true } },
+        tags: { select: { name: true, slug: true } },
+        _count: { select: { comments: true } }
+      },
+    });
+    
+    res.json({ posts });
+  } catch (error) {
+    console.error('Error fetching featured posts:', error);
+    res.status(500).json({ error: 'Failed to retrieve featured posts' });
+  }
+});
+
 router.get('/admin/all', authMiddleware, async (req: AuthRequest, res: Response) => {
   const userId = req.user?.userId;
-  const { status, featured, search } = req.query;
+  const { status, featured, search, category, tags, page = '1', limit = '20' } = req.query;
   
   try {
+    const pageNum = parseInt(page as string);
+    const limitNum = parseInt(limit as string);
+    const skip = (pageNum - 1) * limitNum;
+
     const where: any = { authorId: userId };
     
     // Add status filter
@@ -70,24 +178,54 @@ router.get('/admin/all', authMiddleware, async (req: AuthRequest, res: Response)
     if (search) {
       where.OR = [
         { title: { contains: search as string, mode: 'insensitive' } },
-        { content: { contains: search as string, mode: 'insensitive' } }
+        { content: { contains: search as string, mode: 'insensitive' } },
+        { excerpt: { contains: search as string, mode: 'insensitive' } }
       ];
     }
 
-    const posts = await prisma.post.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        author: {
-          select: { email: true }
-        },
-        _count: {
-          select: { comments: true }
+    // Add category filter
+    if (category) {
+      where.category = { slug: category as string };
+    }
+
+    // Add tags filter
+    if (tags) {
+      const tagArray = (tags as string).split(',').map(t => t.trim());
+      where.tags = {
+        some: {
+          slug: { in: tagArray }
         }
+      };
+    }
+
+    const [posts, totalPosts] = await Promise.all([
+      prisma.post.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limitNum,
+        include: {
+          author: { select: { email: true } },
+          category: { select: { name: true, slug: true, color: true } },
+          tags: { select: { name: true, slug: true } },
+          _count: { select: { comments: true } }
+        }
+      }),
+      prisma.post.count({ where })
+    ]);
+
+    const totalPages = Math.ceil(totalPosts / limitNum);
+    
+    res.json({ 
+      posts,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalPosts,
+        hasNext: pageNum < totalPages,
+        hasPrev: pageNum > 1
       }
     });
-    
-    res.json({ posts });
   } catch (error) {
     console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Failed to retrieve admin posts' });
@@ -99,11 +237,31 @@ router.get('/:slug', async (req: Request, res: Response) => {
   try {
     const post = await prisma.post.findUnique({
       where: { slug },
-      include: { author: { select: { email: true } } },
+      include: { 
+        author: { select: { email: true } },
+        category: { select: { name: true, slug: true, color: true } },
+        tags: { select: { name: true, slug: true } }
+      },
     });
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
     }
+
+    // Increment view count
+    await prisma.post.update({
+      where: { id: post.id },
+      data: { views: { increment: 1 } }
+    });
+
+    // Track view for analytics
+    await prisma.postView.create({
+      data: {
+        postId: post.id,
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent')
+      }
+    });
+
     res.json(post);
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve post' });
@@ -114,7 +272,13 @@ router.get('/id/:id', authMiddleware, async (req: AuthRequest, res: Response) =>
   const { id } = req.params;
   const userId = req.user?.userId;
   try {
-    const post = await prisma.post.findUnique({ where: { id } });
+    const post = await prisma.post.findUnique({ 
+      where: { id },
+      include: {
+        category: { select: { id: true, name: true, slug: true } },
+        tags: { select: { id: true, name: true, slug: true } }
+      }
+    });
     if (!post || post.authorId !== userId) {
       return res.status(403).json({ error: 'Forbidden: You cannot access this post' });
     }
@@ -127,7 +291,19 @@ router.get('/id/:id', authMiddleware, async (req: AuthRequest, res: Response) =>
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     console.log('Creating new post with data:', req.body);
-    const { title, content, status = 'DRAFT', featured = false } = req.body;
+    const { 
+      title, 
+      content, 
+      excerpt,
+      status = 'DRAFT', 
+      featured = false,
+      categoryId,
+      tagIds = [],
+      scheduledAt,
+      metaTitle,
+      metaDescription,
+      keywords
+    } = req.body;
     const authorId = req.user?.userId;
     
     if (!authorId) {
@@ -154,18 +330,25 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
         title,
         slug,
         content,
+        excerpt,
         authorId,
         status,
         featured,
         published: status === 'PUBLISHED',
         publishedAt: status === 'PUBLISHED' ? new Date() : null,
+        scheduledAt: status === 'SCHEDULED' ? new Date(scheduledAt) : null,
+        categoryId: categoryId || null,
+        tags: tagIds.length > 0 ? {
+          connect: tagIds.map((id: string) => ({ id }))
+        } : undefined,
+        metaTitle,
+        metaDescription,
+        keywords
       },
       include: {
-        author: {
-          select: {
-            email: true
-          }
-        }
+        author: { select: { email: true } },
+        category: { select: { name: true, slug: true, color: true } },
+        tags: { select: { name: true, slug: true } }
       }
     });
     
@@ -184,7 +367,19 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, content, status, featured } = req.body;
+    const { 
+      title, 
+      content, 
+      excerpt,
+      status, 
+      featured,
+      categoryId,
+      tagIds = [],
+      scheduledAt,
+      metaTitle,
+      metaDescription,
+      keywords
+    } = req.body;
     const userId = req.user?.userId;
     
     const post = await prisma.post.findUnique({ where: { id } });
@@ -197,10 +392,25 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
       data: {
         title,
         content,
+        excerpt,
         status,
         featured,
         publishedAt: status === 'PUBLISHED' && !post.publishedAt ? new Date() : post.publishedAt,
+        scheduledAt: status === 'SCHEDULED' ? new Date(scheduledAt) : null,
+        categoryId: categoryId || null,
+        tags: {
+          set: [], // Clear existing tags
+          connect: tagIds.map((id: string) => ({ id }))
+        },
+        metaTitle,
+        metaDescription,
+        keywords
       },
+      include: {
+        author: { select: { email: true } },
+        category: { select: { name: true, slug: true, color: true } },
+        tags: { select: { name: true, slug: true } }
+      }
     });
     res.json(updatedPost);
   } catch (error) {

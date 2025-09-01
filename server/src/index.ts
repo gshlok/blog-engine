@@ -2,7 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
-import userRoutes from './routes/user'; // 1. IMPORT
+import userRoutes from './routes/user';
+import categoryRoutes from './routes/categories';
+import tagRoutes from './routes/tags';
+import searchRoutes from './routes/search';
 
 const app = express();
 const port = 3000;
@@ -20,7 +23,10 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
-app.use('/api/user', userRoutes); // 2. USE THE NEW ROUTE
+app.use('/api/user', userRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/tags', tagRoutes);
+app.use('/api/search', searchRoutes);
 
 app.get('/', (req, res) => {
   res.json({ 
