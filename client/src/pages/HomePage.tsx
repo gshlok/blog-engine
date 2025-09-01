@@ -1,47 +1,68 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, type ReactElement } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { Box, Heading, Text, Spinner, UnorderedList, ListItem, Button, Flex } from '@chakra-ui/react';
+import { Post } from '../types';
 
-import { Post } from '../types'; // Add this line
-
-function HomePage() {
+function HomePage(): ReactElement {
+  const { token } = useAuth();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchUserPosts = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
-        const response = await fetch('http://localhost:3000/api/posts');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/posts/admin/all`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
         if (!response.ok) {
-          throw new Error('Something went wrong with the network');
+          throw new Error('Could not fetch your posts.');
         }
-        const data: Post[] = await response.json();
+        const data = await response.json();
         setPosts(data);
       } catch (e) {
-        if (e instanceof Error) {
-            setError(e.message);
-        }
+        if (e instanceof Error) setError(e.message);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPosts();
-  }, []);
+    fetchUserPosts();
+  }, [token]);
 
-  if (loading) return <div>Loading posts...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <Spinner size="xl" />;
+  if (error) return <Text color="red.500">Error: {error}</Text>;
 
   return (
-    <ul>
-      {posts.map((post) => (
-        <li key={post.id}>
-          <Link to={`/posts/${post.slug}`}>
-            <h2>{post.title}</h2>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <Box>
+      <Flex justify="space-between" align="center" mb={6}>
+        <Heading as="h2" size="xl">Your Posts</Heading>
+        <Button colorScheme="green" onClick={() => navigate('/admin')}>
+          Go to Dashboard
+        </Button>
+      </Flex>
+      {posts.length > 0 ? (
+        <UnorderedList spacing={5} styleType="none" ml={0}>
+          {posts.map((post) => (
+            <ListItem key={post.id} p={4} borderWidth={1} borderRadius="md" _hover={{ shadow: "md", borderColor: "blue.200" }}>
+              <Link to={`/posts/${post.slug}`}>
+                <Heading as="h3" size="md" _hover={{ color: 'blue.500' }}>
+                  {post.title}
+                </Heading>
+              </Link>
+            </ListItem>
+          ))}
+        </UnorderedList>
+      ) : (
+        <Text>You haven't created any posts yet. Go to the dashboard to create one!</Text>
+      )}
+    </Box>
   );
 }
 

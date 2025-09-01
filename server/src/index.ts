@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth';
 import postRoutes from './routes/posts';
+import userRoutes from './routes/user'; // 1. IMPORT
 
 const app = express();
 const port = 3000;
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/user', userRoutes); // 2. USE THE NEW ROUTE
 
 app.get('/', (req, res) => {
   res.json({ 

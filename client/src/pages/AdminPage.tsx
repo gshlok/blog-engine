@@ -17,11 +17,7 @@ import {
   Spinner,
   Flex,
 } from '@chakra-ui/react';
-
-interface Post {
-  id: string;
-  title: string;
-}
+import { Post } from '../types';
 
 function AdminPage(): ReactElement {
   const { token, logout } = useAuth();
@@ -54,7 +50,7 @@ function AdminPage(): ReactElement {
     if (token) {
       fetchAdminPosts();
     } else {
-      setLoading(false); // If there's no token, don't stay in a loading state
+      setLoading(false);
     }
   }, [token]);
 
@@ -87,22 +83,47 @@ function AdminPage(): ReactElement {
     }
   };
 
+  const handleDeleteAccount = async (): Promise<void> => {
+    if (!window.confirm('Are you sure you want to permanently delete your account and all your posts? This cannot be undone.')) {
+      return;
+    }
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/user/me`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete account.');
+      }
+      logout();
+      navigate('/register');
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+    }
+  };
+
   return (
     <Box p={8}>
-      <Flex justify="space-between" align="center" mb={4}>
-          <Heading>Admin Dashboard</Heading>
+      <Flex justify="space-between" align="center" mb={4} wrap="wrap">
+        <Heading>Admin Dashboard</Heading>
+        <Box>
           <Button colorScheme="red" onClick={handleLogout}>
             Logout
           </Button>
+          <Button variant="outline" colorScheme="red" onClick={handleDeleteAccount} ml={4}>
+            Delete Account
+          </Button>
+        </Box>
       </Flex>
       <CreatePostForm onPostCreated={fetchAdminPosts} />
-      <hr />
+      <hr style={{ margin: '2rem 0' }} />
       {loading ? (
-        <Spinner size="xl" mt={8} />
+        <Spinner size="xl" />
       ) : error ? (
-        <Text color="red.500" mt={8}>{error}</Text>
+        <Text color="red.500">{error}</Text>
       ) : (
-        <TableContainer mt={8}>
+        <TableContainer>
+          <Heading as="h3" size="lg" mb={4}>Manage Your Posts</Heading>
           <Table variant="simple">
             <Thead>
               <Tr>
