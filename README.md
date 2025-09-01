@@ -25,16 +25,20 @@ A modern full-stack blog application built with React and Node.js, featuring a c
 
 ## Getting Started
 
-The setup process requires some configuration for security:
-
 **1. Make sure Docker is running**
 
 - Open Docker Desktop
 - Wait until you see "Docker Desktop is running" in the Docker Dashboard
 
-**2. Configure Security Settings**
+**2. Clone the Repository**
 
-Create a `.env` file in the server directory with your own secure values:
+```bash
+git clone https://github.com/gshlok/blog-engine.git
+cd blog-engine
+```
+
+**3. Configure Security Settings**
+Create a `.env` file in the `server` directory with your own secure values:
 
 ```bash
 # Required: Generate your own secure JWT secret
