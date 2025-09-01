@@ -1,99 +1,101 @@
+# Blog Engine
 
-# _blog-engine_
+A modern full-stack blog application built with React and Node.js, featuring a clean, decoupled architecture. This project includes user authentication, full CRUD functionality for managing posts, and an intuitive user interface.
 
-A full-stack blog application built from scratch, featuring a modern, decoupled architecture with a React frontend and a Node.js backend API. This project includes user authentication and full CRUD (Create, Read, Update, Delete) functionality for managing posts.
+## Requirements
 
-_**ONLY READ IF INTERESTED IN ENTIRELY RUNNING THE APPLICATION LOCALLY ON YOUR DEVICE.**_
+- Node.js (v18 or higher)
+- Docker Desktop (for PostgreSQL database)
+
+## Before You Start
+
+1. Make sure Docker Desktop is installed and running
+   - Download and install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+   - Start Docker Desktop
+   - Wait for Docker engine to be running (check the Docker Desktop dashboard)
 
 ## Tech Stack
 
-| Category      | Technology                                    |
-|---------------|-----------------------------------------------|
+| Category     | Technology                                       |
+| ------------ | ------------------------------------------------ |
 | **Frontend** | React, Vite, TypeScript, React Router, Chakra UI |
-| **Backend** | Node.js, Express.js, TypeScript, Prisma (ORM) |
-| **Database** | PostgreSQL (run via Docker)                   |
-| **API** | REST, JSON, JWT for Authentication            |
-
+| **Backend**  | Node.js, Express.js, TypeScript, Prisma (ORM)    |
+| **Database** | PostgreSQL (run via Docker)                      |
+| **API**      | REST, JSON, JWT for Authentication               |
 
 ## Getting Started
 
-Follow these steps to get your development environment set up and running.
+The setup process requires some configuration for security:
 
-**1. Clone the Repository**
+**1. Make sure Docker is running**
 
-```bash
-git clone [your-repository-url]
-cd [your-project-folder]
-```
+- Open Docker Desktop
+- Wait until you see "Docker Desktop is running" in the Docker Dashboard
 
-**2. Set Up the Backend**
-First, navigate to the server directory and install its dependencies.
+**2. Configure Security Settings**
 
-```bash
-cd server
-npm install
-```
-
-Next, you need to set up your environment variables. Create a new file named `.env` inside the `server` folder by copying the example:
+Create a `.env` file in the server directory with your own secure values:
 
 ```bash
-cp .env.example .env
+# Required: Generate your own secure JWT secret
+JWT_SECRET="your-own-secure-secret-here"
+
+# Optional: Customize database credentials (default values shown below)
+DB_USER="bloguser"
+DB_PASSWORD="securepassword123"
+DB_NAME="blogdb"
 ```
 
-*(If you don't have an `.env.example` file, create a new file `server/.env` and paste the following into it, changing the JWT\_SECRET):*
-
-```env
-# server/.env
-DATABASE_URL="postgresql://myuser:mypassword@localhost:5432/mydb"
-JWT_SECRET="YOUR_OWN_SUPER_SECRET_RANDOM_STRING_HERE"
-```
-
-**3. Set Up the Frontend**
-Now, navigate to the client directory and install its dependencies.
+To generate a secure JWT secret, you can use:
 
 ```bash
-cd ../client
-npm install
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
-Next, create an environment file for the frontend. Create a new file named `.env` inside the `client` folder.
+**3. Setup Everything**
 
-```env
-# client/.env
-VITE_API_BASE_URL=http://localhost:3000
+```bash
+git clone https://github.com/gshlok/blog-engine.git
+cd blog-engine
+npm run setup
 ```
 
-## Running the Application
+**4. Run the Application**
 
-You'll need to run the database, backend, and frontend in separate terminals.
+```bash
+npm run dev
+```
 
-**1. Start the Database 💾**
+## Security Notes
 
-  * In a terminal at the **root** of the project, start the PostgreSQL database with Docker.
-    ```bash
-    docker compose up -d
-    ```
+- **Never commit `.env` files to version control**
+- Generate your own JWT secret - don't use the default
+- Change default database credentials in production
+- The setup script will respect your custom environment variables if provided
+- For production deployment, additional security measures are recommended
 
-**2. Run Database Migrations ⚙️**
+## Features
 
-  * Before starting the backend, you must set up the database tables.
-  * In a terminal for the **/server** directory, run:
-    ```bash
-    npx prisma migrate dev
-    ```
+- 🔐 User Authentication (Register/Login)
+- ✍️ Create, Edit, and Delete Blog Posts
+- 📱 Responsive Design
+- 🎨 Modern UI with Chakra UI
+- 🔒 Secure API with JWT Authentication
+- 🗄️ PostgreSQL Database (via Docker)
 
-**3. Start the Backend Server**
+## Development
 
-  * In a terminal for the **/server** directory, run:
-    ```bash
-    npm run dev
-    ```
-  * Your backend API is now running at `http://localhost:3000`.
+All configurations are handled automatically by the setup script. The script will:
 
-**4. Start the Frontend Server 🖥️**
+- Configure the PostgreSQL database in Docker
+- Set up all environment variables
+- Generate a secure JWT secret
+- Install all dependencies
 
-  * In a **new** terminal for the **/client** directory, run:
-    ```bash
-    npm run dev
-    ```
-  * Your frontend application is now running. Open your browser and go to `http://localhost:5173`.
+After running `npm run dev`, you can:
+
+1. Register a new account at `http://localhost:5173/register`
+2. Log in with your credentials
+3. Start creating and managing blog posts
+
+The API will be available at `http://localhost:3000` but you won't need to interact with it directly.
