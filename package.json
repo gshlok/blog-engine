@@ -1,0 +1,29 @@
+{
+  "name": "blog-engine",
+  "version": "1.0.0",
+  "description": "A full-stack blog application built from scratch, featuring a modern, decoupled architecture with a React frontend and a Node.js backend API. This project includes user authentication and full CRUD (Create, Read, Update, Delete) functionality for managing posts.",
+   "main": "main.js",
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^37.4.0",
+    "electron-builder": "^26.0.12",
+    "wait-on": "^8.0.4"
+  },
+  "scripts": {
+    "start": "concurrently \"npm:start-client\" \"npm:start-electron\"",
+    "start-client": "cd client && npm run dev",
+    "start-electron": "wait-on http://localhost:5173 && electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gshlok/blog-engine.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gshlok/blog-engine/issues"
+  },
+  "homepage": "https://github.com/gshlok/blog-engine#readme"
+}

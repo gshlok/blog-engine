@@ -20,17 +20,14 @@ function App() {
           <Heading as="h1" size="lg">My Blog App</Heading>
         </Link>
         <HStack spacing={4}>
-          {/* This link is now always visible */}
           <Link to="/explore"><Button variant="ghost">Explore Posts</Button></Link>
           
           {token ? (
-            // Show these links only when LOGGED IN
             <>
               <Link to="/my-posts"><Button variant="ghost">My Posts</Button></Link>
               <Link to="/admin"><Button colorScheme="blue">Dashboard</Button></Link>
             </>
           ) : (
-            // Show this link only when LOGGED OUT
             <Link to="/login"><Button colorScheme="green">Login</Button></Link>
           )}
         </HStack>
@@ -42,10 +39,10 @@ function App() {
           <Route path="/" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/explore" element={<HomePage />} />
+          <Route path="/posts/:slug" element={<PostPage />} /> {/* This route is now PUBLIC */}
           
-          {/* Protected Routes (require login) */}
+          {/* Protected Routes */}
           <Route path="/my-posts" element={<ProtectedRoute><MyPostsPage /></ProtectedRoute>} />
-          <Route path="/posts/:slug" element={<ProtectedRoute><PostPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
           <Route path="/admin/edit/:id" element={<ProtectedRoute><EditPostPage /></ProtectedRoute>} />
         </Routes>

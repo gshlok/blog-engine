@@ -23,7 +23,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:slug', authMiddleware, async (req, res) => {
+// This route is now PUBLIC
+router.get('/:slug', async (req, res) => {
   const { slug } = req.params;
   try {
     const post = await prisma.post.findUnique({

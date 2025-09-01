@@ -2,9 +2,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// in server/prisma/schema.prisma
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db" // This will create a database file
 }
 
 model User {
