@@ -14,35 +14,15 @@ interface AuthRequest extends Request {
 
 // --- PUBLIC ROUTES ---
 
-// Get all published posts
 router.get('/', async (req: Request, res: Response) => {
   try {
-    console.log('Fetching published posts');
     const posts = await prisma.post.findMany({
-      where: { 
-        OR: [
-          { status: 'PUBLISHED' },
-          { published: true } // For backward compatibility
-        ]
-      },
+      where: { status: 'PUBLISHED' },
       orderBy: { createdAt: 'desc' },
-      include: { 
-        author: { 
-          select: { 
-            email: true 
-          } 
-        },
-        _count: {
-          select: {
-            comments: true
-          }
-        }
-      },
+      include: { author: { select: { email: true } } },
     });
-    console.log(`Found ${posts.length} published posts`);
-    res.json({ posts });
+    res.json(posts);
   } catch (error) {
-    console.error('Error fetching posts:', error);
     res.status(500).json({ error: 'Failed to retrieve posts' });
   }
 });
@@ -126,28 +106,12 @@ router.get('/id/:id', authMiddleware, async (req: AuthRequest, res: Response) =>
 
 router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
-    console.log('Creating new post with data:', req.body);
-    const { title, content, status = 'DRAFT', featured = false } = req.body;
+    const { title, content, status, featured } = req.body;
     const authorId = req.user?.userId;
-    
     if (!authorId) {
       return res.status(403).json({ error: 'User not authenticated properly' });
     }
-    
-    // Generate slug from title
-    const baseSlug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    
-    // Check for duplicate slugs
-    const slugCount = await prisma.post.count({
-      where: {
-        slug: {
-          startsWith: baseSlug
-        }
-      }
-    });
-    
-    // If duplicates exist, append a number
-    const slug = slugCount > 0 ? `${baseSlug}-${slugCount + 1}` : baseSlug;
+    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
     
     const newPost = await prisma.post.create({
       data: {
@@ -155,29 +119,15 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
         slug,
         content,
         authorId,
-        status,
-        featured,
-        published: status === 'PUBLISHED',
+        status: status || 'DRAFT',
+        featured: featured || false,
         publishedAt: status === 'PUBLISHED' ? new Date() : null,
       },
-      include: {
-        author: {
-          select: {
-            email: true
-          }
-        }
-      }
     });
-    
-    console.log('Post created successfully:', newPost);
-    res.status(201).json({ post: newPost });
+    res.status(201).json(newPost);
   } catch (error) {
     console.error('Error creating post:', error);
-    if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Failed to create post' });
-    }
+    res.status(500).json({ error: 'Failed to create post' });
   }
 });
 
