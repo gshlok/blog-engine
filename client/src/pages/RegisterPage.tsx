@@ -1,11 +1,11 @@
-// in client/src/pages/RegisterPage.tsx
 import { useState, type ReactElement } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Box, Button, Input, Heading, Text } from '@chakra-ui/react';
+import { Box, Button, Input, Heading, Text, FormControl, FormLabel, VStack } from '@chakra-ui/react';
 
 function RegisterPage(): ReactElement {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nickname, setNickname] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -16,13 +16,12 @@ function RegisterPage(): ReactElement {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, nickname }),
       });
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Registration failed.');
       }
-      // Redirect to login page on successful registration
       navigate('/login');
     } catch (err) {
       if (err instanceof Error) setError(err.message);
@@ -35,30 +34,36 @@ function RegisterPage(): ReactElement {
         Create an Account
       </Heading>
       <form onSubmit={handleSubmit}>
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          mb={4}
-          required
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          mb={6}
-          required
-        />
-        {error && (
-          <Text color="red.500" mb={4} textAlign="center">
-            {error}
-          </Text>
-        )}
-        <Button type="submit" colorScheme="green" width="full">
-          Register
-        </Button>
+        <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel>Nickname:</FormLabel>
+            <Input
+              type="text"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Email:</FormLabel>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Password:</FormLabel>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </FormControl>
+          {error && <Text color="red.500">{error}</Text>}
+          <Button type="submit" colorScheme="green" width="full">
+            Register
+          </Button>
+        </VStack>
       </form>
       <Text mt={4} textAlign="center">
         Already have an account? <Link to="/login" style={{ color: 'blue' }}>Login here</Link>

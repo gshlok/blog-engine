@@ -1,48 +1,50 @@
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import HomePage from './pages/HomePage';
+import { Routes, Route, Link } from 'react-router-dom';
+import HomePage from './pages/HomePage'; // Public feed
 import PostPage from './pages/PostPage';
 import LoginPage from './pages/LoginPage';
 import AdminPage from './pages/AdminPage';
 import EditPostPage from './pages/EditPostPage';
 import RegisterPage from './pages/RegisterPage';
+import MyPostsPage from './pages/MyPostsPage'; // User's private feed
 import ProtectedRoute from './components/ProtectedRoute';
-import { Box, Flex, Heading, Button } from '@chakra-ui/react';
+import { Box, Flex, Heading, Button, HStack } from '@chakra-ui/react';
 import { useAuth } from './context/AuthContext';
 
 function App() {
   const { token } = useAuth();
-  const location = useLocation();
-
-  const showLoginLink = !token && location.pathname !== '/login' && location.pathname !== '/register';
 
   return (
     <Box>
-      <Flex
-        as="nav"
-        align="center"
-        justify="space-between"
-        wrap="wrap"
-        padding="1rem"
-        bg="gray.100"
-        borderBottom="1px"
-        borderColor="gray.200"
-      >
-        <Link to="/" style={{ textDecoration: 'none', color: 'black' }}>
-          <Heading as="h1" size="lg">My Journal App</Heading>
+      <Flex as="nav" align="center" justify="space-between" wrap="wrap" padding="1rem" bg="gray.100">
+        <Link to={token ? "/my-posts" : "/"} style={{ textDecoration: 'none', color: 'black' }}>
+          <Heading as="h1" size="lg">My Blog App</Heading>
         </Link>
-        {showLoginLink && (
-          <Link to="/login">
-            <Button colorScheme="teal">Login</Button>
-          </Link>
-        )}
+        <HStack spacing={4}>
+          {/* This link is now always visible */}
+          <Link to="/explore"><Button variant="ghost">Explore Posts</Button></Link>
+          
+          {token ? (
+            // Show these links only when LOGGED IN
+            <>
+              <Link to="/my-posts"><Button variant="ghost">My Posts</Button></Link>
+              <Link to="/admin"><Button colorScheme="blue">Dashboard</Button></Link>
+            </>
+          ) : (
+            // Show this link only when LOGGED OUT
+            <Link to="/login"><Button colorScheme="green">Login</Button></Link>
+          )}
+        </HStack>
       </Flex>
       
       <main style={{ padding: '1rem' }}>
         <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/explore" element={<HomePage />} />
           
-          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+          {/* Protected Routes (require login) */}
+          <Route path="/my-posts" element={<ProtectedRoute><MyPostsPage /></ProtectedRoute>} />
           <Route path="/posts/:slug" element={<ProtectedRoute><PostPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
           <Route path="/admin/edit/:id" element={<ProtectedRoute><EditPostPage /></ProtectedRoute>} />

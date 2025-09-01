@@ -1,10 +1,13 @@
 import { useState, type ReactElement } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
   Button,
+  FormControl,
+  FormLabel,
   Input,
+  VStack,
   Heading,
   Text,
 } from '@chakra-ui/react';
@@ -30,7 +33,7 @@ function LoginPage(): ReactElement {
       }
       const data = await response.json();
       login(data.token);
-      navigate('/admin');
+      navigate('/my-posts'); // Go to the user's private post list after login
     } catch (err) {
       if (err instanceof Error) setError(err.message);
     }
@@ -39,40 +42,38 @@ function LoginPage(): ReactElement {
   return (
     <Box maxW="md" mx="auto" mt={10} p={8} borderWidth={1} borderRadius="lg" boxShadow="lg">
       <Heading as="h2" size="lg" textAlign="center" mb={6}>
-        Admin Login
+        Login to Your Account
       </Heading>
       <form onSubmit={handleSubmit}>
-        <Box mb={4}>
-          <label htmlFor="email" style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-            Email:
-          </label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </Box>
-        <Box mb={6}>
-          <label htmlFor="password" style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>
-            Password:
-          </label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Box>
-        
-        {error && <Text color="red.500" mb={4}>{error}</Text>}
-        
-        <Button type="submit" colorScheme="blue" width="full">
-          Login
-        </Button>
+        <VStack spacing={4}>
+          <FormControl isRequired>
+            <FormLabel>Email:</FormLabel>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </FormControl>
+          <FormControl isRequired>
+            <FormLabel>Password:</FormLabel>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </FormControl>
+          {error && <Text color="red.500">{error}</Text>}
+          <Button type="submit" colorScheme="green" width="full">
+            Login
+          </Button>
+        </VStack>
       </form>
+      <Text mt={4} textAlign="center">
+        Don't have an account?{' '}
+        <Link to="/" style={{ color: 'blue', fontWeight: 'bold' }}>
+          Register here
+        </Link>
+      </Text>
     </Box>
   );
 }

@@ -11,7 +11,11 @@ router.get('/', async (req, res) => {
     const posts = await prisma.post.findMany({
       where: { published: true },
       orderBy: { createdAt: 'desc' },
-      include: { author: { select: { email: true } } },
+      include: {
+        author: {
+          select: { nickname: true },
+        },
+      },
     });
     res.json(posts);
   } catch (error) {
@@ -19,12 +23,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:slug', async (req, res) => {
+router.get('/:slug', authMiddleware, async (req, res) => {
   const { slug } = req.params;
   try {
     const post = await prisma.post.findUnique({
       where: { slug },
-      include: { author: { select: { email: true } } },
+      include: { author: { select: { nickname: true } } },
     });
     if (!post) {
       return res.status(404).json({ error: 'Post not found' });
@@ -72,7 +76,7 @@ router.post('/', authMiddleware, async (req, res) => {
     if (!authorId) {
       return res.status(403).json({ error: 'User not authenticated properly' });
     }
-    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    const slug = title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') + '-' + Date.now();
     const newPost = await prisma.post.create({
       data: {
         title,

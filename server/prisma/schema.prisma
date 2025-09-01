@@ -1,34 +1,30 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" // Must be postgresql
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-// User Model: for admin accounts
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  nickname  String   @unique
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   posts     Post[]
 }
 
-// Post Model: for blog entries
 model Post {
   id        String   @id @default(cuid())
   title     String
   slug      String   @unique
-  content   String?  // The '?' makes this field optional
+  content   String?
   published Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
 }

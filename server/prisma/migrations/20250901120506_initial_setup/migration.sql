@@ -2,6 +2,7 @@
 CREATE TABLE "public"."User" (
     "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "nickname" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -25,6 +26,9 @@ CREATE TABLE "public"."Post" (
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "public"."User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_nickname_key" ON "public"."User"("nickname");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Post_slug_key" ON "public"."Post"("slug");
