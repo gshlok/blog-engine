@@ -20,7 +20,7 @@ function EditPostPage() {
   useEffect(() => {
     const fetchPostForEdit = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/id/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/posts/id/${id}`, {
           headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Could not fetch post data.');

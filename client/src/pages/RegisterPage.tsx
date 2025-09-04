@@ -1,6 +1,15 @@
 import { useState, type ReactElement } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Box, Button, Input, Heading, Text, FormControl, FormLabel, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Input,
+  Heading,
+  Text,
+  FormControl,
+  FormLabel,
+  VStack,
+} from '@chakra-ui/react';
 
 function RegisterPage(): ReactElement {
   const [email, setEmail] = useState('');
@@ -18,13 +27,21 @@ function RegisterPage(): ReactElement {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, nickname }),
       });
+      
       if (!response.ok) {
         const data = await response.json();
         throw new Error(data.error || 'Registration failed.');
       }
+      
+      // On success, this line navigates to the login page
       navigate('/login');
+
     } catch (err) {
-      if (err instanceof Error) setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred during registration.');
+      }
     }
   };
 
@@ -41,6 +58,7 @@ function RegisterPage(): ReactElement {
               type="text"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
+              placeholder="Your public display name"
             />
           </FormControl>
           <FormControl isRequired>
@@ -49,6 +67,7 @@ function RegisterPage(): ReactElement {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
             />
           </FormControl>
           <FormControl isRequired>
@@ -57,6 +76,7 @@ function RegisterPage(): ReactElement {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Choose a strong password"
             />
           </FormControl>
           {error && <Text color="red.500">{error}</Text>}
@@ -66,7 +86,10 @@ function RegisterPage(): ReactElement {
         </VStack>
       </form>
       <Text mt={4} textAlign="center">
-        Already have an account? <Link to="/login" style={{ color: 'blue' }}>Login here</Link>
+        Already have an account?{' '}
+        <Link to="/login" style={{ color: 'blue', fontWeight: 'bold' }}>
+          Login here
+        </Link>
       </Text>
     </Box>
   );

@@ -12,7 +12,7 @@ function PostPage() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/posts/${slug}`);
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/posts/${slug}`);
         if (!response.ok) {
           throw new Error('Post not found');
         }

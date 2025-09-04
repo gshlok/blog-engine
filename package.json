@@ -12,7 +12,10 @@
   "scripts": {
     "start": "concurrently \"npm:start-client\" \"npm:start-electron\"",
     "start-client": "cd client && npm run dev",
-    "start-electron": "wait-on http://localhost:5173 && electron ."
+    "start-electron": "wait-on http://localhost:5173 && electron .",
+    "build": "electron-builder",
+    "prestart": "npm run setup",
+    "setup": "npm install && cd client && npm install && cd ../server && npm install && npx prisma generate && npx prisma migrate dev --name init"
   },
   "repository": {
     "type": "git",
