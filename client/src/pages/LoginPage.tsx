@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   Box,
   Button,
@@ -8,6 +8,7 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
+
 
 function LoginPage(): ReactElement {
   const [email, setEmail] = useState('');
@@ -68,11 +69,22 @@ function LoginPage(): ReactElement {
         </Box>
         
         {error && <Text color="red.500" mb={4}>{error}</Text>}
-        
+
         <Button type="submit" colorScheme="blue" width="full">
           Login
         </Button>
       </form>
+
+      <Text mt={6} textAlign="center">
+        Don't have an account?
+      </Text>
+      <Box textAlign="center" mt={2}>
+        <Link to="/register">
+          <Button colorScheme="green" variant="outline">
+            Register
+          </Button>
+        </Link>
+      </Box>
     </Box>
   );
 }
