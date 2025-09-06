@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { authMiddleware } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
@@ -9,6 +9,7 @@ const router = Router();
 interface AuthRequest extends Request {
   user?: {
     userId: string;
+    email: string;
   };
 }
 
@@ -151,7 +152,7 @@ router.get('/featured', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/admin/all', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/admin/all', authenticateToken, async (req: AuthRequest, res: Response) => {
   const userId = req.user?.userId;
   const { status, featured, search, category, tags, page = '1', limit = '20' } = req.query;
   
@@ -268,7 +269,7 @@ router.get('/:slug', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/id/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/id/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
   const userId = req.user?.userId;
   try {
@@ -288,7 +289,7 @@ router.get('/id/:id', authMiddleware, async (req: AuthRequest, res: Response) =>
   }
 });
 
-router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     console.log('Creating new post with data:', req.body);
     const { 
@@ -364,7 +365,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.put('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { 
@@ -419,7 +420,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const userId = req.user?.userId;
