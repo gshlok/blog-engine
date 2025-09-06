@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box,
-  Button,
   ButtonGroup,
   IconButton,
   Textarea,
@@ -9,15 +8,15 @@ import {
   HStack,
   useColorModeValue,
 } from '@chakra-ui/react';
-import { 
-  FiBold, 
-  FiItalic, 
-  FiLink, 
-  FiImage, 
-  FiList, 
-  FiAlignLeft, 
-  FiAlignCenter, 
-  FiAlignRight 
+import {
+  FiBold,
+  FiItalic,
+  FiLink,
+  FiImage,
+  FiList,
+  FiAlignLeft,
+  FiAlignCenter,
+  FiAlignRight,
 } from 'react-icons/fi';
 
 interface RichTextEditorProps {
@@ -38,7 +37,7 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
   };
 
   const insertMarkdown = (prefix: string, suffix: string = prefix) => {
-    const newValue = 
+    const newValue =
       value.substring(0, selection.start) +
       prefix +
       value.substring(selection.start, selection.end) +
@@ -48,7 +47,6 @@ export default function RichTextEditor({ value, onChange }: RichTextEditorProps)
   };
 
   const handleImage = () => {
-    // Here you would typically open a media library dialog
     const url = prompt('Enter image URL:');
     if (url) {
       insertMarkdown(`![Image](${url})`);

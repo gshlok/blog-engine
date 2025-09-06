@@ -1,29 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Input,
-  InputGroup,
-  InputLeftElement,
-  VStack,
-  HStack,
-  Select,
-  Button,
-  Text,
-  Badge,
-  Flex,
-  useDisclosure,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  Checkbox,
-  Divider,
-  IconButton,
-  Tooltip
+  Box, Input, InputGroup, InputLeftElement, VStack, HStack, Select, Button, Text, Badge, Flex,
+  useDisclosure, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
+  Checkbox, Divider, IconButton, Tooltip
 } from '@chakra-ui/react';
-import { SearchIcon, FilterIcon, CloseIcon } from '@chakra-ui/icons';
+import { SearchIcon, CloseIcon } from '@chakra-ui/icons';
 import { SearchFilters, Category, Tag } from '../types';
 
 interface SearchComponentProps {
@@ -34,30 +15,19 @@ interface SearchComponentProps {
 }
 
 const SearchComponent: React.FC<SearchComponentProps> = ({
-  onSearch,
-  categories,
-  tags,
-  isLoading = false
+  onSearch, categories, tags
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [filters, setFilters] = useState<SearchFilters>({
-    sort: 'newest'
-  });
+  const [filters, setFilters] = useState<SearchFilters>({ sort: 'newest' });
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleSearch = () => {
-    const searchFilters: SearchFilters = {
-      ...filters,
-      query: searchQuery || undefined
-    };
+    const searchFilters: SearchFilters = { ...filters, query: searchQuery || undefined };
     onSearch(searchFilters);
   };
 
   const handleFilterChange = (key: keyof SearchFilters, value: any) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: value
-    }));
+    setFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const clearFilters = () => {
@@ -65,22 +35,14 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
     setSearchQuery('');
   };
 
-  const hasActiveFilters = searchQuery || 
-    filters.category || 
-    filters.tags?.length || 
-    filters.featured !== undefined || 
-    filters.sort !== 'newest';
+  const hasActiveFilters = searchQuery || filters.category || filters.tags?.length || filters.featured !== undefined || filters.sort !== 'newest';
 
   useEffect(() => {
-    // Auto-search when filters change (debounced)
     const timeoutId = setTimeout(() => {
-      if (hasActiveFilters) {
-        handleSearch();
-      }
+      if (hasActiveFilters) handleSearch();
     }, 500);
-
     return () => clearTimeout(timeoutId);
-  }, [filters]);
+  }, [filters]); // Warning: if you want debounce for searchQuery too, add it here
 
   return (
     <Box>
@@ -101,7 +63,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
           <Tooltip label="Advanced Filters">
             <IconButton
               aria-label="Advanced filters"
-              icon={<FilterIcon />}
+              icon={<SearchIcon />} // replaced FilterIcon with SearchIcon as placeholder
               onClick={onOpen}
               variant={hasActiveFilters ? "solid" : "outline"}
               colorScheme={hasActiveFilters ? "blue" : "gray"}
@@ -173,7 +135,6 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
           </Select>
         </HStack>
       </VStack>
-
       {/* Advanced Filters Drawer */}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="md">
         <DrawerOverlay />
@@ -197,9 +158,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   ))}
                 </Select>
               </Box>
-
               <Divider />
-
               {/* Tags Filter */}
               <Box>
                 <Text fontWeight="semibold" mb={2}>Tags</Text>
@@ -222,9 +181,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   ))}
                 </VStack>
               </Box>
-
               <Divider />
-
               {/* Featured Filter */}
               <Box>
                 <Text fontWeight="semibold" mb={2}>Featured Posts</Text>
@@ -240,9 +197,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
                   <option value="false">Not featured</option>
                 </Select>
               </Box>
-
               <Divider />
-
               {/* Apply/Clear Buttons */}
               <HStack justify="space-between">
                 <Button onClick={clearFilters} variant="outline" colorScheme="red">

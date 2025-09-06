@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   SimpleGrid,
@@ -28,7 +27,7 @@ export default function ThemeManager() {
       switchTheme(themeId);
       toast({
         title: 'Theme Activated',
-        description: `Theme "${themes.find(t => t.id === themeId)?.name}" has been activated successfully.`,
+        description: `Theme "${themes.find((t) => t.id === themeId)?.name}" has been activated successfully.`,
         status: 'success',
         duration: 3000,
         isClosable: true,
@@ -54,7 +53,6 @@ export default function ThemeManager() {
         position="relative"
         overflow="hidden"
       >
-        {/* Theme preview elements */}
         <Box
           position="absolute"
           top="20px"
@@ -103,7 +101,9 @@ export default function ThemeManager() {
     <Box p={5}>
       <VStack spacing={6} align="stretch">
         <Box>
-          <Heading size="lg" mb={2}>Theme Management</Heading>
+          <Heading size="lg" mb={2}>
+            Theme Management
+          </Heading>
           <Text color="gray.600">
             Customize the appearance of your blog by selecting different themes.
           </Text>
@@ -118,10 +118,10 @@ export default function ThemeManager() {
               borderColor={theme.isActive ? theme.primaryColor : borderColor}
               borderRadius="lg"
               overflow="hidden"
-              _hover={{ 
+              _hover={{
                 shadow: 'lg',
                 transform: 'translateY(-2px)',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
               }}
               transition="all 0.2s"
             >
@@ -145,7 +145,7 @@ export default function ThemeManager() {
 
               <CardBody pt={0}>
                 {getThemePreview(theme)}
-                
+
                 <VStack spacing={3} mt={4} align="stretch">
                   <HStack justify="space-between" fontSize="sm">
                     <Text color="gray.600">Primary:</Text>
@@ -158,7 +158,7 @@ export default function ThemeManager() {
                       borderColor="gray.200"
                     />
                   </HStack>
-                  
+
                   <HStack justify="space-between" fontSize="sm">
                     <Text color="gray.600">Secondary:</Text>
                     <Box
@@ -188,10 +188,17 @@ export default function ThemeManager() {
           ))}
         </SimpleGrid>
 
-        <Box p={4} bg="blue.50" borderRadius="md" border="1px solid" borderColor="blue.200">
+        <Box
+          p={4}
+          bg="blue.50"
+          borderRadius="md"
+          border="1px solid"
+          borderColor="blue.200"
+        >
           <Text fontSize="sm" color="blue.800">
-            <strong>Tip:</strong> Theme changes are applied immediately and saved to your browser. 
-            The selected theme will be remembered for future visits.
+            <strong>Tip:</strong> Theme changes are applied immediately and
+            saved to your browser. The selected theme will be remembered for
+            future visits.
           </Text>
         </Box>
       </VStack>

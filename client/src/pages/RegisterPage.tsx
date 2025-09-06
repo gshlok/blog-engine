@@ -1,70 +1,151 @@
-// in client/src/pages/RegisterPage.tsx
 import { useState, type ReactElement } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Box, Button, Input, Heading, Text } from '@chakra-ui/react';
 
 function RegisterPage(): ReactElement {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
-    event.preventDefault();
-    setError('');
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Registration failed.');
-      }
-      // Redirect to login page on successful registration
-      navigate('/login');
-    } catch (err) {
-      if (err instanceof Error) setError(err.message);
-    }
-  };
+  const handleSubmit = async (event: React.FormEvent): Promise<void> => {
+    event.preventDefault();
+    setError('');
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Registration failed.');
+      }
+      // Redirect to login page on successful registration
+      navigate('/login');
+    } catch (err) {
+      if (err instanceof Error) setError(err.message);
+    }
+  };
 
-  return (
-    <Box maxW="md" mx="auto" mt={10} p={8} borderWidth={1} borderRadius="lg" boxShadow="lg">
-      <Heading as="h2" size="lg" textAlign="center" mb={6}>
-        Create an Account
-      </Heading>
-      <form onSubmit={handleSubmit}>
-        <Input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          mb={4}
-          required
-        />
-        <Input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          mb={6}
-          required
-        />
-        {error && (
-          <Text color="red.500" mb={4} textAlign="center">
-            {error}
-          </Text>
-        )}
-        <Button type="submit" colorScheme="green" width="full">
-          Register
-        </Button>
-      </form>
-      <Text mt={4} textAlign="center">
-        Already have an account? <Link to="/login" style={{ color: 'blue' }}>Login here</Link>
-      </Text>
-    </Box>
-  );
+  return (
+    <Box
+      minH="100vh"
+      w="100vw"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      bg="white"
+    >
+      <Box
+        w={{ base: '95%', sm: '430px', md: '512px' }}
+        py={10}
+        px={6}
+        border="1.5px solid"
+        borderColor="#e6dbdb"
+        borderRadius="2xl"
+        boxShadow="base"
+        bg="white"
+        fontFamily="'Newsreader','Noto Sans',sans-serif"
+      >
+        <Heading
+          fontSize="2xl"
+          color="#181111"
+          fontWeight="bold"
+          textAlign="center"
+          mb={3}
+          letterSpacing="tight"
+        >
+          Create an Account
+        </Heading>
+        <form onSubmit={handleSubmit}>
+          <Box mb={3}>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              size="lg"
+              borderRadius="lg"
+              borderColor="#e6dbdb"
+              color="#181111"
+              bg="white"
+              _placeholder={{ color: "#896161" }}
+              h={14}
+              fontSize="md"
+              mb={0}
+            />
+          </Box>
+          <Box mb={3}>
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              size="lg"
+              borderRadius="lg"
+              borderColor="#e6dbdb"
+              color="#181111"
+              bg="white"
+              _placeholder={{ color: "#896161" }}
+              h={14}
+              fontSize="md"
+              mb={0}
+            />
+          </Box>
+          {error && (
+            <Text color="red.500" mb={2} textAlign="center">
+              {error}
+            </Text>
+          )}
+          <Button
+            type="submit"
+            bg="green.600"
+            color="white"
+            fontWeight="bold"
+            fontSize="md"
+            w="100%"
+            h={10}
+            mb={1}
+            borderRadius="lg"
+            _hover={{ bg: "green.800" }}
+          >
+            Register
+          </Button>
+        </form>
+        <Heading
+          as="h3"
+          fontSize="lg"
+          fontWeight="bold"
+          color="#181111"
+          pt={4}
+          pb={2}
+          textAlign="center"
+          letterSpacing={-0.5}
+        >
+          Already have an account?
+        </Heading>
+        <Button
+          as={Link}
+          to="/login"
+          bg="#f4f0f0"
+          color="#181111"
+          w="100%"
+          h={10}
+          fontWeight="bold"
+          fontSize="md"
+          borderRadius="lg"
+          mt={1}
+          _hover={{ bg: "#ded4d4" }}
+          variant="solid"
+        >
+          Login
+        </Button>
+      </Box>
+    </Box>
+  );
 }
 
 export default RegisterPage;

@@ -1,4 +1,8 @@
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Box, Flex, Heading, Button, Select, HStack, useColorModeValue } from '@chakra-ui/react';
+import { useAuth } from './context/AuthContext';
+import { useTheme } from './context/ThemeContext';
+
 import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import LoginPage from './pages/LoginPage';
@@ -8,9 +12,6 @@ import RegisterPage from './pages/RegisterPage';
 import PostsManagement from './pages/PostsManagement';
 import NewPostPage from './pages/NewPostPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import { Box, Flex, Heading, Button, Select, HStack, useColorModeValue } from '@chakra-ui/react';
-import { useAuth } from './context/AuthContext';
-import { useTheme } from './context/ThemeContext';
 
 function App() {
   const { token, logout } = useAuth();
@@ -82,13 +83,28 @@ function App() {
         <Routes>
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />
-          
           <Route path="/" element={<HomePage />} />
           <Route path="/posts/:slug" element={<PostPage />} />
-          <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
-          <Route path="/admin/posts" element={<ProtectedRoute><PostsManagement /></ProtectedRoute>} />
-          <Route path="/admin/posts/new" element={<ProtectedRoute><NewPostPage /></ProtectedRoute>} />
-          <Route path="/admin/posts/edit/:id" element={<ProtectedRoute><EditPostPage /></ProtectedRoute>} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/posts" element={
+            <ProtectedRoute>
+              <PostsManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/posts/new" element={
+            <ProtectedRoute>
+              <NewPostPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/posts/edit/:id" element={
+            <ProtectedRoute>
+              <EditPostPage />
+            </ProtectedRoute>
+          } />
         </Routes>
       </main>
     </Box>

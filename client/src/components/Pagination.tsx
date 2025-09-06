@@ -6,9 +6,9 @@ import {
   Select,
   Box,
   IconButton,
-  Tooltip
+  Tooltip,
 } from '@chakra-ui/react';
-import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from '@chakra-ui/icons';
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { PaginationInfo } from '../types';
 
 interface PaginationProps {
@@ -44,27 +44,24 @@ const Pagination: React.FC<PaginationProps> = ({
   const getPageNumbers = () => {
     const pages = [];
     const maxVisible = 5;
-    
+
     if (totalPages <= maxVisible) {
-      // Show all pages if total is small
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Show pages around current page
       let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
       let end = Math.min(totalPages, start + maxVisible - 1);
-      
-      // Adjust start if we're near the end
+
       if (end - start + 1 < maxVisible) {
         start = Math.max(1, end - maxVisible + 1);
       }
-      
+
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
     }
-    
+
     return pages;
   };
 
@@ -83,7 +80,7 @@ const Pagination: React.FC<PaginationProps> = ({
           {Math.min(currentPage * (pagination.totalPosts / totalPages), totalPosts)} of{' '}
           {totalPosts} posts
         </Text>
-        
+
         {showLimitSelector && onLimitChange && (
           <HStack spacing={2}>
             <Text fontSize="sm" color="gray.600">Show:</Text>
@@ -131,7 +128,6 @@ const Pagination: React.FC<PaginationProps> = ({
 
         {/* Page numbers */}
         {pageNumbers.map(page => {
-          // Show ellipsis for gaps
           if (page === pageNumbers[0] && page > 1) {
             return (
               <React.Fragment key={`ellipsis-start-${page}`}>
@@ -147,7 +143,7 @@ const Pagination: React.FC<PaginationProps> = ({
               </React.Fragment>
             );
           }
-          
+
           if (page === pageNumbers[pageNumbers.length - 1] && page < totalPages) {
             return (
               <React.Fragment key={`ellipsis-end-${page}`}>
@@ -163,7 +159,7 @@ const Pagination: React.FC<PaginationProps> = ({
               </React.Fragment>
             );
           }
-          
+
           return (
             <Button
               key={page}

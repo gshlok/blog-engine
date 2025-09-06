@@ -16,7 +16,6 @@ import {
   Card,
   CardBody,
   Icon,
-  Flex,
   Badge,
   Progress,
   useToast
@@ -51,21 +50,19 @@ const Dashboard: React.FC<DashboardProps> = ({ token }) => {
 
   useEffect(() => {
     fetchDashboardData();
+    // eslint-disable-next-line
   }, []);
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch posts for stats
       const postsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/posts/admin/all`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
-      // Fetch categories
+
       const categoriesResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
-      // Fetch tags
+
       const tagsResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/tags`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -78,26 +75,26 @@ const Dashboard: React.FC<DashboardProps> = ({ token }) => {
       const categoriesData = await categoriesResponse.json();
       const tagsData = await tagsResponse.json();
 
-      const posts = postsData.posts || [];
-      const categories = categoriesData.categories || [];
-      const tags = tagsData.tags || [];
+      const posts: Post[] = postsData.posts || [];
+      const categories: Category[] = categoriesData.categories || [];
+      const tags: Tag[] = tagsData.tags || [];
 
       // Calculate stats
       const totalPosts = posts.length;
-      const publishedPosts = posts.filter(p => p.status === 'PUBLISHED').length;
-      const draftPosts = posts.filter(p => p.status === 'DRAFT').length;
-      const totalViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
-      const totalLikes = posts.reduce((sum, p) => sum + (p.likes || 0), 0);
-      const totalComments = posts.reduce((sum, p) => sum + (p._count?.comments || 0), 0);
+      const publishedPosts = posts.filter((p: Post) => p.status === 'PUBLISHED').length;
+      const draftPosts = posts.filter((p: Post) => p.status === 'DRAFT').length;
+      const totalViews = posts.reduce((sum: number, p: Post) => sum + (p.views || 0), 0);
+      const totalLikes = posts.reduce((sum: number, p: Post) => sum + (p.likes || 0), 0);
+      const totalComments = posts.reduce((sum: number, p: Post) => sum + (p._count?.comments || 0), 0);
 
       // Get recent posts (last 5)
-      const recentPosts = posts
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      const recentPosts = [...posts]
+        .sort((a: Post, b: Post) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 5);
 
       // Get popular posts (by views)
-      const popularPosts = posts
-        .sort((a, b) => (b.views || 0) - (a.views || 0))
+      const popularPosts = [...posts]
+        .sort((a: Post, b: Post) => (b.views || 0) - (a.views || 0))
         .slice(0, 5);
 
       setStats({
@@ -140,6 +137,7 @@ const Dashboard: React.FC<DashboardProps> = ({ token }) => {
   return (
     <Box>
       <VStack spacing={6} align="stretch">
+
         {/* Quick Actions */}
         <Card>
           <CardBody>
@@ -221,7 +219,7 @@ const Dashboard: React.FC<DashboardProps> = ({ token }) => {
             <CardBody>
               <VStack spacing={4} align="stretch">
                 <Heading size="md">Content Organization</Heading>
-                
+
                 <Box>
                   <HStack justify="space-between" mb={2}>
                     <Text fontWeight="medium">Categories</Text>
@@ -255,7 +253,7 @@ const Dashboard: React.FC<DashboardProps> = ({ token }) => {
               <VStack spacing={4} align="stretch">
                 <Heading size="md">Recent Posts</Heading>
                 <VStack spacing={3} align="stretch" maxH="300px" overflowY="auto">
-                  {stats.recentPosts.map(post => (
+                  {stats.recentPosts.map((post: Post) => (
                     <Box key={post.id} p={3} borderWidth={1} borderRadius="md">
                       <HStack justify="space-between">
                         <VStack align="start" spacing={1}>
@@ -293,7 +291,7 @@ const Dashboard: React.FC<DashboardProps> = ({ token }) => {
             <VStack spacing={4} align="stretch">
               <Heading size="md">Popular Posts</Heading>
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-                {stats.popularPosts.map(post => (
+                {stats.popularPosts.map((post: Post) => (
                   <Box key={post.id} p={4} borderWidth={1} borderRadius="md">
                     <VStack align="start" spacing={2}>
                       <Text fontWeight="medium" noOfLines={2}>

@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import { Request, Response } from 'express';
 import prisma from '../lib/prisma';
-import { authMiddleware } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth';
+
 
 const router = Router();
 
@@ -9,6 +10,7 @@ const router = Router();
 interface AuthRequest extends Request {
   user?: {
     userId: string;
+    email: string;
   };
 }
 
@@ -95,7 +97,7 @@ router.get('/:slug', async (req: Request, res: Response) => {
 });
 
 // Create new category (admin only)
-router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.post('/', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { name, description, color } = req.body;
     
@@ -132,7 +134,7 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // Update category (admin only)
-router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.put('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     const { name, description, color } = req.body;
@@ -174,7 +176,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
 });
 
 // Delete category (admin only)
-router.delete('/:id', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.delete('/:id', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
     

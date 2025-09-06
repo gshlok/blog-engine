@@ -21,11 +21,10 @@ interface Comment {
 }
 
 interface CommentsProps {
-  postId: string;
   comments: Comment[];
 }
 
-export default function Comments({ postId, comments }: CommentsProps) {
+export default function Comments({ comments }: CommentsProps) {
   const toast = useToast();
   const [newComment, setNewComment] = React.useState('');
 
@@ -56,7 +55,7 @@ export default function Comments({ postId, comments }: CommentsProps) {
         <Text fontSize="xl" fontWeight="bold" mb={4}>
           Comments ({comments.length})
         </Text>
-        
+
         {/* New Comment Form */}
         <Box mb={8}>
           <Textarea

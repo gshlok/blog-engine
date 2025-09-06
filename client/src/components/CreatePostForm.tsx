@@ -56,6 +56,7 @@ export default function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [activeTab, setActiveTab] = useState(0);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const { token } = useAuth();
   const toast = useToast();
 
@@ -156,8 +157,8 @@ export default function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
         showErrorToast(err.message);
+        setError(err.message);
       }
     } finally {
       setLoading(false);
