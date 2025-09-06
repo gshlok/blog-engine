@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx prisma generate && tsc", 
     "start": "node dist/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "setup:sample": "ts-node src/scripts/setupSampleData.ts"
   },
   "keywords": [],
   "author": "",

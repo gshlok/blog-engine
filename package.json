@@ -7,8 +7,12 @@
     "install:all": "npm run install:server && npm run install:client",
     "install:server": "cd server && npm install",
     "install:client": "cd client && npm install",
-    "dev": "docker compose up -d && npm run dev:server & npm run dev:client",
+    "dev": "docker compose up -d && concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:server": "cd server && npx prisma migrate dev && npm run dev",
-    "dev:client": "cd client && npm run dev"
+    "dev:client": "cd client && npm run dev",
+    "setup:sample": "cd server && npm run setup:sample"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   }
 }
