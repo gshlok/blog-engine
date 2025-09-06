@@ -29,7 +29,7 @@ const customTheme = extendTheme({
     },
   },
   styles: {
-    global: (props: any) => ({
+    global: (_props: any) => ({
       body: {
         bg: 'var(--chakra-colors-background, white)',
         color: 'var(--chakra-colors-text, black)',
