@@ -8,18 +8,18 @@ import tagRoutes from './routes/tags';
 import searchRoutes from './routes/search';
 
 const app = express();
-const port = 3000;
+
+// Use environment variable PORT assigned by Render, fallback to 3000 for local
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// V V V ADD THIS NEW CODE BLOCK V V V
-// This middleware will log every incoming request
+// Logging middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] Received ${req.method} request for ${req.url}`);
-  next(); // Pass the request to the next handler
+  next();
 });
-// ^ ^ ^ END OF NEW CODE BLOCK ^ ^ ^
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
@@ -29,12 +29,13 @@ app.use('/api/tags', tagRoutes);
 app.use('/api/search', searchRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'API is alive and running!',
-    timestamp: new Date().toISOString() 
+    timestamp: new Date().toISOString(),
   });
 });
 
+// Listen on all interfaces by default for Render; do not specify 'localhost'
 app.listen(port, () => {
-  console.log(`🚀 Server is running at http://localhost:${port}`);
+  console.log(`🚀 Server is running on port ${port}`);
 });
