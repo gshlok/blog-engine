@@ -12,18 +12,21 @@ function HomePage(): ReactElement {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      if (!token) {
-        setLoading(false);
-        return;
-      }
+    const fetchPosts = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/posts/admin/all`, {
-          headers: { 'Authorization': `Bearer ${token}` },
+        const endpoint = token ? '/api/posts/admin/all' : '/api/posts';
+        const headers: HeadersInit = token 
+          ? { 'Authorization': `Bearer ${token}` }
+          : {};
+
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}${endpoint}`, {
+          headers,
         });
+        
         if (!response.ok) {
-          throw new Error('Could not fetch your posts.');
+          throw new Error('Could not fetch posts.');
         }
+        
         const data = await response.json();
         setPosts(data);
       } catch (e) {
@@ -33,7 +36,7 @@ function HomePage(): ReactElement {
       }
     };
 
-    fetchUserPosts();
+    fetchPosts();
   }, [token]);
 
   if (loading) return <Spinner size="xl" />;
@@ -42,10 +45,12 @@ function HomePage(): ReactElement {
   return (
     <Box>
       <Flex justify="space-between" align="center" mb={6}>
-        <Heading as="h2" size="xl">Your Posts</Heading>
-        <Button colorScheme="green" onClick={() => navigate('/admin')}>
-          Go to Dashboard
-        </Button>
+        <Heading as="h2" size="xl">{token ? 'Your Posts' : 'Recent Posts'}</Heading>
+        {token && (
+          <Button colorScheme="green" onClick={() => navigate('/admin')}>
+            Go to Dashboard
+          </Button>
+        )}
       </Flex>
       {posts.length > 0 ? (
         <UnorderedList spacing={5} styleType="none" ml={0}>
@@ -55,12 +60,19 @@ function HomePage(): ReactElement {
                 <Heading as="h3" size="md" _hover={{ color: 'blue.500' }}>
                   {post.title}
                 </Heading>
+                <Text mt={2} color="gray.600">
+                  {post.excerpt || (post.content && post.content.slice(0, 150) + '...')}
+                </Text>
               </Link>
             </ListItem>
           ))}
         </UnorderedList>
       ) : (
-        <Text>You haven't created any posts yet. Go to the dashboard to create one!</Text>
+        <Text>
+          {token 
+            ? "You haven't created any posts yet. Go to the dashboard to create one!"
+            : "No posts available yet."}
+        </Text>
       )}
     </Box>
   );

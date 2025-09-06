@@ -1,0 +1,68 @@
+:root {
+  --chakra-colors-primary: #3182CE;
+  --chakra-colors-secondary: #E2E8F0;
+  --chakra-colors-background: #FFFFFF;
+  --chakra-colors-text: #1A202C;
+}
+
+[data-theme="dark"] {
+  --chakra-colors-primary: #319795;
+  --chakra-colors-secondary: #2D3748;
+  --chakra-colors-background: #1A202C;
+  --chakra-colors-text: #F7FAFC;
+}
+
+[data-theme="minimal"] {
+  --chakra-colors-primary: #805AD5;
+  --chakra-colors-secondary: #F7FAFC;
+  --chakra-colors-background: #FFFFFF;
+  --chakra-colors-text: #2D3748;
+}
+
+[data-theme="warm"] {
+  --chakra-colors-primary: #DD6B20;
+  --chakra-colors-secondary: #FEF5E7;
+  --chakra-colors-background: #FFFAF0;
+  --chakra-colors-text: #2D3748;
+}
+
+[data-theme="elegant"] {
+  --chakra-colors-primary: #D53F8C;
+  --chakra-colors-secondary: #FED7E2;
+  --chakra-colors-background: #FFF5F7;
+  --chakra-colors-text: #1A202C;
+}
+
+/* Apply theme colors to common elements */
+body {
+  background-color: var(--chakra-colors-background);
+  color: var(--chakra-colors-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-aware button styles */
+.btn-primary {
+  background-color: var(--chakra-colors-primary);
+  color: white;
+}
+
+.btn-secondary {
+  background-color: var(--chakra-colors-secondary);
+  color: var(--chakra-colors-text);
+}
+
+/* Theme-aware card styles */
+.card {
+  background-color: var(--chakra-colors-background);
+  border: 1px solid var(--chakra-colors-secondary);
+}
+
+/* Theme-aware link styles */
+a {
+  color: var(--chakra-colors-primary);
+}
+
+a:hover {
+  color: var(--chakra-colors-primary);
+  opacity: 0.8;
+}
