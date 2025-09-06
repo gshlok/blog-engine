@@ -2,7 +2,6 @@ import { ReactElement } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreatePostForm from '../components/CreatePostForm';
 import {
-  Box,
   Heading,
   Container,
   Breadcrumb,

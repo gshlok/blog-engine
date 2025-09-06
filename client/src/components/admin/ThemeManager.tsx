@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   SimpleGrid,
@@ -7,6 +6,7 @@ import {
   Button,
   useToast,
   Badge,
+  Flex,
 } from '@chakra-ui/react';
 
 interface Theme {
@@ -45,7 +45,6 @@ export default function ThemeManager() {
   const toast = useToast();
 
   const handleActivateTheme = (themeId: string) => {
-    // Here you would implement the theme activation logic
     toast({
       title: 'Theme Activated',
       description: `Theme ${themeId} has been activated successfully.`,
@@ -75,13 +74,13 @@ export default function ThemeManager() {
               fallbackSrc="https://via.placeholder.com/300x200"
             />
             <Box p={6}>
-              <Box d="flex" alignItems="baseline">
+              <Flex alignItems="baseline">
                 {theme.isActive && (
                   <Badge borderRadius="full" px="2" colorScheme="teal">
                     Active
                   </Badge>
                 )}
-              </Box>
+              </Flex>
               <Text mt={2} fontSize="xl" fontWeight="semibold" lineHeight="short">
                 {theme.name}
               </Text>

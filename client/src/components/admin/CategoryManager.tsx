@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Button,
@@ -47,12 +47,13 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
   const [loading, setLoading] = useState(true);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [deleteCategory, setDeleteCategory] = useState<Category | null>(null);
-  
+
   const { isOpen: isEditOpen, onOpen: onEditOpen, onClose: onEditClose } = useDisclosure();
   const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
   const { isOpen: isCreateOpen, onOpen: onCreateOpen, onClose: onCreateClose } = useDisclosure();
-  
+
   const toast = useToast();
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -62,6 +63,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line
   }, []);
 
   const fetchCategories = async () => {
@@ -71,11 +73,11 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch categories');
       }
-      
+
       const data = await response.json();
       setCategories(data.categories || []);
     } catch (error) {
@@ -93,14 +95,14 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
-      const url = editingCategory 
+      const url = editingCategory
         ? `${import.meta.env.VITE_API_BASE_URL}/api/categories/${editingCategory.id}`
         : `${import.meta.env.VITE_API_BASE_URL}/api/categories`;
-      
+
       const method = editingCategory ? 'PUT' : 'POST';
-      
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -109,16 +111,16 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
         },
         body: JSON.stringify(formData)
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to save category');
       }
-      
+
       const data = await response.json();
-      
+
       if (editingCategory) {
-        setCategories(prev => prev.map(cat => 
+        setCategories(prev => prev.map(cat =>
           cat.id === editingCategory.id ? data.category : cat
         ));
         toast({
@@ -138,7 +140,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
           isClosable: true,
         });
       }
-      
+
       handleClose();
     } catch (error) {
       toast({
@@ -163,7 +165,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
 
   const handleDelete = async () => {
     if (!deleteCategory) return;
-    
+
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/categories/${deleteCategory.id}`, {
         method: 'DELETE',
@@ -171,12 +173,12 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
           'Authorization': `Bearer ${token}`
         }
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete category');
       }
-      
+
       setCategories(prev => prev.filter(cat => cat.id !== deleteCategory.id));
       toast({
         title: 'Success',
@@ -362,7 +364,11 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
       </Modal>
 
       {/* Delete Confirmation */}
-      <AlertDialog isOpen={isDeleteOpen} onClose={onDeleteClose}>
+      <AlertDialog
+        isOpen={isDeleteOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onDeleteClose}
+      >
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
@@ -378,7 +384,7 @@ const CategoryManager: React.FC<CategoryManagerProps> = ({ token }) => {
               )}
             </AlertDialogBody>
             <AlertDialogFooter>
-              <Button onClick={onDeleteClose}>Cancel</Button>
+              <Button ref={cancelRef} onClick={onDeleteClose}>Cancel</Button>
               <Button colorScheme="red" onClick={handleDelete} ml={3}>
                 Delete
               </Button>

@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import LoginPage from './pages/LoginPage';
@@ -9,35 +9,41 @@ import PostsManagement from './pages/PostsManagement';
 import NewPostPage from './pages/NewPostPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Box } from '@chakra-ui/react';
-import { useAuth } from './context/AuthContext';
 
 function App() {
-  const { token, logout } = useAuth();
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  return (
-    <Box>
-      {/* Navigation bar removed as requested */}
-      <main style={{ padding: '1rem' }}>
-        <Routes>
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<HomePage />} />
-          <Route path="/posts/:slug" element={<PostPage />} />
-          <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
-          <Route path="/admin/posts" element={<ProtectedRoute><PostsManagement /></ProtectedRoute>} />
-          <Route path="/admin/posts/new" element={<ProtectedRoute><NewPostPage /></ProtectedRoute>} />
-          <Route path="/admin/posts/edit/:id" element={<ProtectedRoute><EditPostPage /></ProtectedRoute>} />
-        </Routes>
-      </main>
-    </Box>
-  );
+  return (
+    <Box>
+      {/* Navigation bar removed as requested */}
+      <main style={{ padding: '1rem' }}>
+        <Routes>
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/posts/:slug" element={<PostPage />} />
+          <Route path="/admin" element={
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/posts" element={
+            <ProtectedRoute>
+              <PostsManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/posts/new" element={
+            <ProtectedRoute>
+              <NewPostPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/posts/edit/:id" element={
+            <ProtectedRoute>
+              <EditPostPage />
+            </ProtectedRoute>
+          } />
+        </Routes>
+      </main>
+    </Box>
+  );
 }
 
 export default App;

@@ -29,7 +29,6 @@ export default function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [status, setStatus] = useState('DRAFT');
   const [featured, setFeatured] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
-  const [error, setError] = useState('');
   const { token } = useAuth();
   const toast = useToast();
 
@@ -54,7 +53,6 @@ export default function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setError('');
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/posts`, {
@@ -82,7 +80,6 @@ export default function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
         showErrorToast(err.message);
       }
     }
