@@ -36,6 +36,7 @@ app.get('/', (req, res) => {
 });
 
 // Listen on all interfaces by default for Render; do not specify 'localhost'
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
+
