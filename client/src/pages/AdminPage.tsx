@@ -4,6 +4,7 @@ import { Box, Tabs, TabList, TabPanels, Tab, TabPanel, Heading } from '@chakra-u
 import Dashboard from '../components/admin/Dashboard';
 import PostsManagement from './PostsManagement';
 import CategoryManager from '../components/admin/CategoryManager';
+import TagManager from '../components/admin/TagManager';
 import PluginManager from '../components/admin/PluginManager';
 import ThemeManager from '../components/admin/ThemeManager';
 
@@ -24,6 +25,7 @@ function AdminPage() {
           <Tab>Overview</Tab>
           <Tab>Posts</Tab>
           <Tab>Categories</Tab>
+          <Tab>Tags</Tab>
           <Tab>Plugins</Tab>
           <Tab>Themes</Tab>
         </TabList>
@@ -41,6 +43,10 @@ function AdminPage() {
             <CategoryManager token={token} />
           </TabPanel>
 
+          <TabPanel>
+            <TagManager token={token} />
+          </TabPanel>
+          
           <TabPanel>
             <PluginManager />
           </TabPanel>
